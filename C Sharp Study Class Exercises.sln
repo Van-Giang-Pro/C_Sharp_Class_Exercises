@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11806.211 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Callback System", "Callback System\Callback System.csproj", "{F8B4F468-6630-4608-8FD4-1ECAF9BC235D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parallel Execution Planner", "Parallel Execution Planner\Parallel Execution Planner.csproj", "{9B0BF65A-0E1C-4D31-8EED-9098BF97E995}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temperature Monitoring Using Delegate", "Temperature Monitoring Using Delegate\Temperature Monitoring Using Delegate.csproj", "{6C9CEFB8-67F9-4E2D-98EA-A9F9426E6932}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision Production Machine Checking", "Vision Production Machine Checking\Vision Production Machine Checking.csproj", "{853C4F72-C01A-43D5-9C47-4E7415FF84F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scratch File For Basic Programs", "Scratch File For Basic Programs\Scratch File For Basic Programs.csproj", "{0767E877-04A6-499C-995A-C56ACE0FA9A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example For Observer Strategy Factory", "Example For Observer Strategy Factory\Example For Observer Strategy Factory.csproj", "{1808118A-7968-44FC-B0C4-9A884B64ED67}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8B4F468-6630-4608-8FD4-1ECAF9BC235D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8B4F468-6630-4608-8FD4-1ECAF9BC235D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8B4F468-6630-4608-8FD4-1ECAF9BC235D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8B4F468-6630-4608-8FD4-1ECAF9BC235D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B0BF65A-0E1C-4D31-8EED-9098BF97E995}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B0BF65A-0E1C-4D31-8EED-9098BF97E995}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B0BF65A-0E1C-4D31-8EED-9098BF97E995}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B0BF65A-0E1C-4D31-8EED-9098BF97E995}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C9CEFB8-67F9-4E2D-98EA-A9F9426E6932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C9CEFB8-67F9-4E2D-98EA-A9F9426E6932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C9CEFB8-67F9-4E2D-98EA-A9F9426E6932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C9CEFB8-67F9-4E2D-98EA-A9F9426E6932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{853C4F72-C01A-43D5-9C47-4E7415FF84F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{853C4F72-C01A-43D5-9C47-4E7415FF84F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{853C4F72-C01A-43D5-9C47-4E7415FF84F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{853C4F72-C01A-43D5-9C47-4E7415FF84F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0767E877-04A6-499C-995A-C56ACE0FA9A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0767E877-04A6-499C-995A-C56ACE0FA9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0767E877-04A6-499C-995A-C56ACE0FA9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0767E877-04A6-499C-995A-C56ACE0FA9A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1808118A-7968-44FC-B0C4-9A884B64ED67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1808118A-7968-44FC-B0C4-9A884B64ED67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1808118A-7968-44FC-B0C4-9A884B64ED67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1808118A-7968-44FC-B0C4-9A884B64ED67}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B5C0E7C-B684-4ECE-B76F-A8E65B533E05}
+	EndGlobalSection
+EndGlobal
