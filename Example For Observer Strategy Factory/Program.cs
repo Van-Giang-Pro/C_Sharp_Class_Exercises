@@ -29,7 +29,7 @@ namespace ObserverStrategyFactoryDemo
         }
     }
 
-    // Factory Pattern
+    // Phần 1 : Factory Pattern
     // Ta có ICamera là interface chung
     // Code chính chỉ làm việc với ICamera, không phụ thuộc trực tiếp vào BaslerCamera hoặc HikCamera
 
@@ -87,5 +87,59 @@ namespace ObserverStrategyFactoryDemo
         {
             Console.WriteLine("[Hikvision] Ngắt kết nối camera Hikvision");
         }
+    }
+
+    public class CognexCamera : ICamera
+    {
+        public string Name => "Cognex Camera";
+        public void Connect()
+        {
+            Console.WriteLine("[Cognex] Kết nối camera Cognex");
+        }
+        public ImageData Capture()
+        {
+            Console.WriteLine("[Cognex] Chụp ảnh PCB bằng Cognex SDK");
+            return new ImageData("pcb_image_cognex.bmp", Name);
+        }
+        public void Disconnect()
+        {
+            Console.WriteLine("[Cognex] Ngắt kết nối camera Cognex");
+        }
+    }
+
+    // Đây là factory tạo camera
+
+    public static class CameraFactory
+    {
+        public static ICamera CreateCamera(string cameraType) // Tính đa hình
+        // Hàm này trả về một cái máy ảnh, nó không biết chắc là của hãng nào
+        // Nhưng cam kết chúng có đầy đủ các tính năng của một cái máy ảnh được khai báo trong Interface ICamera
+        {
+            switch (cameraType.ToLower())
+            {
+                case "basler":
+                    return new BaslerCamera();
+
+                case "hkvision":
+                    return new HikCamera();
+
+                case "cognex":
+                    return new CognexCamera();
+
+                default: // Trường hợp ngoại lệ cuối cùng
+                    throw new ArgumentException("Không hỗ trợ camera : " + cameraType);
+                    // Argument Exception là lỗi do người dùng truyền vào một dữ liệu không hợp lệ
+            }
+        }
+    }
+
+    // Phần 2 : Strategy Pattern 
+    // IInspection Strategy là interface chung cho các thuật toán kiểm tra
+    // Machine có thể đổi thuật toán runtime mà không cần chỉnh sửa code máy
+
+    public interface IInspectionStrategy
+    {
+        string Name { get; }
+        InspectionResult Inspect(ImageData image);
     }
 }
