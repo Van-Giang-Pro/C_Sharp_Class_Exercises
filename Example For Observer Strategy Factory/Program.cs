@@ -21,10 +21,10 @@ namespace ObserverStrategyFactoryDemo
         public bool IsPassed { get; set; }
         public string InspectionName { get; set; }
         public string Message { get; set; }
-        public InspectionResult(bool isPassed, string inpectionName, string message)
+        public InspectionResult(bool isPassed, string inspectionName, string message)
         {
             IsPassed = isPassed;
-            InspectionName = inpectionName;
+            InspectionName = inspectionName;
             Message = message;
         }
     }
@@ -141,5 +141,53 @@ namespace ObserverStrategyFactoryDemo
     {
         string Name { get; }
         InspectionResult Inspect(ImageData image);
+    }
+    
+    public class MissingComponentInspection : IInspectionStrategy
+    {
+        public string Name => "Missing Component Inspection";
+
+        public InspectionResult Inspect(ImageData image)
+        {
+            Console.WriteLine("[Strategy] Đang kiểm tra thiếu linh kiện");
+            Console.WriteLine("[Strategy] Ảnh đầu vào : " + image.FileName);
+            return new InspectionResult(
+                true,
+                Name,
+                "Không phát hiện thiếu linh kiện"
+            );
+        }
+    }
+
+    public class PositionOffsetInspection : IInspectionStrategy
+    {
+        public string Name => "Position Offset Inspection";
+
+        public InspectionResult Inspect(ImageData image)
+        {
+            Console.WriteLine("[Strategy] Đang kiểm tra lệch vị trí linh kiện");
+            Console.WriteLine(("[Strategy] Ảnh đầu vào : " + image.FileName));
+            return new InspectionResult(
+                false,
+                Name,
+                "Phát hiện IC bị lệch 0.35mm"
+            );
+        }
+    }
+
+    public class ScratchInspection : IInspectionStrategy
+    {
+        public string Name => "Scratch Inspection";
+
+        public InspectionResult Inspect(ImageData image)
+        {
+            Console.WriteLine("[Strategy] Đang kiểm tra vết xước trên PCB");
+            Console.WriteLine("[Strategy] Ảnh đầu vào : " + image.FileName);
+            return new InspectionResult(
+                true,
+                Name,
+                "Không phát hiện vết xước nghiêm trọng"
+            );
+        }
     }
 }
