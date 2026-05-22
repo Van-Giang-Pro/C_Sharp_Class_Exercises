@@ -37,8 +37,7 @@ namespace ObserverStrategyFactoryDemo
     {
         string Name { get; } // Các field hay hàm trong Interface thì không cần khai báo phạm vi
         void Connect(); // Mặc định các field hay hàm trong Interface đều là public nên không cần khai báo chi cho mắc công
-        ImageData Capture();
-        // Cái nào dùng bản thiết kế này đều có hàm Capture và trả về ImageData
+        ImageData Capture(); // Cái nào dùng bản thiết kế này đều có hàm Capture và trả về ImageData
         void Disconnect();
     }
 
@@ -188,6 +187,208 @@ namespace ObserverStrategyFactoryDemo
                 Name,
                 "Không phát hiện vết xước nghiêm trọng"
             );
+        }
+    }
+    
+    // Phần này chúng ta có thể dùng Factory để tạo thuật toán kiểm tra, Factory có thể dùng để taọ Strategy theo cấu hình
+
+    public static class InspectionStrategyFactory
+    {
+        public static IInspectionStrategy CreateStrategy(string inspectionType)
+        {
+            switch (inspectionType.ToLower())
+            {
+                case "missing":
+                    return new MissingComponentInspection();
+                
+                case "position":
+                    return new PositionOffsetInspection();
+                
+                case "scratch":
+                    return new ScratchInspection();
+                
+                default:
+                    throw new ArgumentException("Không hỗ trợ kiểu kiểm tra : " + inspectionType);
+            }
+        }
+    }
+    
+    // Phần 2 : Observer Pattern
+    // Thông báo kết quả cho nhiều nơi
+    // Khi triểm tra xong cần biết kết quả : UI, Logger, PLC
+    // Vision Machine không cần gọi cưng từng module
+    // Nó chỉ notify cho danh sách observer
+
+    public interface IInspectionObserver
+    {
+        void OnInspectionCompleted(InspectionResult result);
+    }
+
+    public class UiDisplayObserver : IInspectionObserver
+    {
+        public void OnInspectionCompleted(InspectionResult result)
+        {
+            string status = result.IsPassed ? "OK" : "NG";
+            Console.WriteLine("[UI] Hiển thị kết quả lên màn hình : " + status);
+            Console.WriteLine("[UI] Nội dụng : " + result.Message);
+        }
+    }
+
+    public class LoggerObserver : IInspectionObserver
+    {
+        public void OnInspectionCompleted(InspectionResult result)
+        {
+            Console.WriteLine(
+                "[LOG]" + 
+                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                " | Inspection = " + result.InspectionName +
+                " | Passed = " + result.IsPassed +
+                " | Message = " + result.Message
+            );
+        }
+    }
+
+    public class PlcObserver : IInspectionObserver
+    {
+        public void OnInspectionCompleted(InspectionResult result)
+        {
+            if (result.IsPassed)
+            {
+                Console.WriteLine("[PLC] Gửi tín hiệu Pass. Cho băng tải chạy tiếp");
+            }
+            else
+            {
+                Console.WriteLine("[PLC] Gửi tín hiệu FAIL. Đẩy sản phẩm sang line NG");
+            }
+        }
+    }
+
+    public class AlarmObserver : IInspectionObserver
+    {
+        public void OnInspectionCompleted(InspectionResult result)
+        {
+            if (!result.IsPassed)
+            {
+                Console.WriteLine("[ALARM] Bật đèn đỏ và còi cảnh báo lỗi sản phẩm");
+            }
+        }
+    }
+    
+    // Class này ứng dụng cả 3 pattern
+    // Factory : camera và stategy được tạo từ bên ngoài rồi truyền vào
+    // Strategy : máy dùng IInspectionStrategy để kiểm tra ảnh
+    // Observer : máy thông báo kết quả cho nhiều observer
+
+    public class VisionInspectionMachine
+    {
+        private readonly ICamera _camera; 
+        // Máy này cần một camera để chụp ảnh, field này giữ camera đó
+        // Ta có readonly nghĩa là sau khi gán trong constructor thì không đổi được nữa, vì máy đã lắp camera rồi thì không thay camera giữa chừng
+        private IInspectionStrategy _strategy;
+        // Máy cần một thuật toán để kiểm tra, field này giữ thuật toán hiện tại
+        // Không có read only vì máy được phép đổi thuật toán giữa chừng qua hàm SetStrategy()
+        private readonly List<IInspectionObserver> _observers
+        // Một danh sách nhưng nơi nhận kết quả
+        // Có readonly ở đây để bản thân cái list không bị thay thế, nhưng vẫn có thể add hoặc remove các phần tử bên trong list
+
+        public class VisionInspectionMachine(ICamera camera, IInspectionStrategy strategy)
+        {
+            _camera = camera;
+            _strategy = strategy;
+            _observers = new List<IInspectionObserver>()
+        }
+
+        public void SetStrategy(IInspectionStrategy strategy)
+        {
+            _stategy = strategy;
+            Console.WriteLine("\n[Machine] Đã đổi thuật toán kiếm tra sang : " + _strategy.Name);
+        }
+
+        public void Attach(IInspectionObserver observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void Detach(IInspectionObserver observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void Notify(InspectionResult result)
+        {
+            foreach (IInspectionObserver observer in _observers)
+            {
+                observer.OnInspectionCompleted(result);
+            }
+        }
+
+        public void RunInspection()
+        {
+            Console.WriteLine("==============================================================");
+            Console.WriteLine("Bắt Đầu Kiểm Tra PCB");
+            Console.WriteLine("Camera : " + _camera.Name);
+            Console.WriteLine("Strategy : " + _strategy.Name);
+            Console.WriteLine("==============================================================");
+            
+            _camera.Connect();
+
+            ImageData image = _camera.Capture();
+
+            InspectionResult result = _strategy.Inspect(image);
+            
+            Console.WriteLine("[Machine] Kiểm tra hoàn tất. Chuẩn bị thông báo kết quả");
+            
+            Notify(result);
+
+            _camera.Disconnect();
+            
+            Console.WriteLine("==============================================================");
+            Console.WriteLine("Kết thúc kiểm tra PCB");
+            Console.WriteLine("==============================================================");
+        }
+    }
+    
+    // Main Program
+
+    public class Program
+    {
+        static void Main()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine("Demo : Observer - Strategy - Factory");
+            Console.WriteLine("Ứng Dụng Machine Vision Kiểm Tra PCB");
+            Console.WriteLine();
+            
+            // Factory
+            // Code chính không tự tạo new BaslerCamera hay HikCamera
+            // Code chính gọi Factory để tọa camera theo cấu hình
+            
+            Console.WriteLine("Chọn camera :");
+            Console.WriteLine("1. Basler Camera");
+            Console.WriteLine("2. Hikvision Camera");
+            Console.WriteLine("3. Cognex Camera");
+            Console.Write("Nhập lựa chọn camera : ");
+
+            string cameraChoice = Console.ReadLine() ?? ""; // Là nếu vế trái bị null, người dùng không nhập gì thì trả về vế phải
+            string cameraType = ConvertCameraChoice(cameraChoice);
+            
+            ICamera camera = CameraFactory.CreateCamera(cameraType);
+            
+            // Strategy
+            // Code chính chọn thuật toán kiểm tra ban đầu
+            // Thuật toán được tạo ra qua Factory
+            
+            Console.WriteLine();
+            Console.WriteLine("Chọn kiểu kiểm tra : ");
+            Console.WriteLine("1. Kiểm tra thiếu linh kiện");
+            Console.WriteLine("2. Kiểm tra lệch vị trí linh kiện");
+            Console.WriteLine("3. Kiểm tra vết xước PCB");
+            Console.Write("Nhập lưa chọn kiểm tra : ");
+
+            string inspectionChoice = Console.ReadLine() ?? "";
+            string inspectionType = ConvertInspectionChoice(inspectionChoice);
+            
+            IInspectionStrategy strategy = InspectionStrategyFactory.CreateStrategy(inspectionType);
         }
     }
 }
