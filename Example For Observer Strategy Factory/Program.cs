@@ -220,7 +220,7 @@ namespace ObserverStrategyFactoryDemo
         }
     }
     
-    // Phần 2 : Observer Pattern
+    // Phần 3 : Observer Pattern
     // Thông báo kết quả cho nhiều nơi
     // Khi triểm tra xong cần biết kết quả : UI, Logger, PLC
     // Vision Machine không cần gọi cưng từng module
