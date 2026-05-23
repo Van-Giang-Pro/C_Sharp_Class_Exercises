@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ObserverStrategyFactoryDemo
+
 // Dùng để phân loại gom các đoạn code có liên quan lại với nhau, giúp quản lý dự án ngăn nắp và tránh bị trùng tên
+
 {
     public class ImageData
     {
@@ -44,6 +46,7 @@ namespace ObserverStrategyFactoryDemo
     public class BaslerCamera : ICamera
     {
         public string Name => "Basler Camera";
+
         /*
         public string Name
         {
@@ -55,6 +58,7 @@ namespace ObserverStrategyFactoryDemo
         Console.WriteLine(camera.Name); // Máy sẽ in ra Basler Camera
         Đoạn code này tạo ra một thuộc tính chỉ đọc read only
         */
+
         public void Connect()
         {
             Console.WriteLine("[Basler] Kết nối camera Basler");
@@ -110,9 +114,12 @@ namespace ObserverStrategyFactoryDemo
 
     public static class CameraFactory
     {
-        public static ICamera CreateCamera(string cameraType) // Tính đa hình
+        public static ICamera CreateCamera(string cameraType) 
+
+        // Tính đa hình
         // Hàm này trả về một cái máy ảnh, nó không biết chắc là của hãng nào
         // Nhưng cam kết chúng có đầy đủ các tính năng của một cái máy ảnh được khai báo trong Interface ICamera
+
         {
             switch (cameraType.ToLower())
             {
@@ -282,25 +289,31 @@ namespace ObserverStrategyFactoryDemo
     public class VisionInspectionMachine
     {
         private readonly ICamera _camera; 
+
         // Máy này cần một camera để chụp ảnh, field này giữ camera đó
         // Ta có readonly nghĩa là sau khi gán trong constructor thì không đổi được nữa, vì máy đã lắp camera rồi thì không thay camera giữa chừng
+
         private IInspectionStrategy _strategy;
+
         // Máy cần một thuật toán để kiểm tra, field này giữ thuật toán hiện tại
         // Không có read only vì máy được phép đổi thuật toán giữa chừng qua hàm SetStrategy()
-        private readonly List<IInspectionObserver> _observers
+
+        private readonly List<IInspectionObserver> _observers;
+
         // Một danh sách nhưng nơi nhận kết quả
         // Có readonly ở đây để bản thân cái list không bị thay thế, nhưng vẫn có thể add hoặc remove các phần tử bên trong list
+        // Nghĩa là sao khi khởi tạo, nó không cho gán lại nữa, cho cho thêm bớt phần tử thôi
 
-        public class VisionInspectionMachine(ICamera camera, IInspectionStrategy strategy)
+        public VisionInspectionMachine(ICamera camera, IInspectionStrategy strategy)
         {
             _camera = camera;
             _strategy = strategy;
-            _observers = new List<IInspectionObserver>()
+            _observers = new List<IInspectionObserver>();
         }
 
         public void SetStrategy(IInspectionStrategy strategy)
         {
-            _stategy = strategy;
+            _strategy = strategy;
             Console.WriteLine("\n[Machine] Đã đổi thuật toán kiếm tra sang : " + _strategy.Name);
         }
 
@@ -335,6 +348,8 @@ namespace ObserverStrategyFactoryDemo
             ImageData image = _camera.Capture();
 
             InspectionResult result = _strategy.Inspect(image);
+
+            // Chấm inspect được là do _strategy có kiểu IInspectionStrategy mà interface đó có hàm Inspect()
             
             Console.WriteLine("[Machine] Kiểm tra hoàn tất. Chuẩn bị thông báo kết quả");
             
@@ -389,6 +404,80 @@ namespace ObserverStrategyFactoryDemo
             string inspectionType = ConvertInspectionChoice(inspectionChoice);
             
             IInspectionStrategy strategy = InspectionStrategyFactory.CreateStrategy(inspectionType);
+
+            // Tạo máy vision
+            // Máy chỉ nhận interface IInterface và IInspectionStrategy
+
+            VisionInspectionMachine machine = new VisionInspectionMachine(camera, strategy);
+
+            // Observer
+            // Đăng ký những nơi muốn nhận kết quả kiểm tra
+            // Sau này muốn thêm EmailObserver, DatabaseObserver
+            // Thì chỉ cần Attach thêm, không phải sửa RunInspection
+
+            machine.Attach(new UiDisplayObserver());
+            machine.Attach(new LoggerObserver());
+            machine.Attach(new PlcObserver());
+            machine.Attach(new AlarmObserver());
+
+            // Chạy lần kiểm tra đầu tiên
+
+            machine.RunInspection();
+
+            // Demo đổi strategy runtime
+            // Cùng một máy, cùng một camera nhưng đổi thuật toán kiểm tra
+
+            Console.WriteLine("Demo đổi strategy trong runtime");
+            Console.WriteLine("Máy sẽ đổi sang kiểm tra lệch vị trí linh kiện");
+
+            IInspectionStrategy newStrategy = new PositionOffsetInspection();
+            machine.SetStrategy(newStrategy);
+            machine.RunInspection();
+
+            Console.WriteLine("Nhấn Enter để thoát");
+            Console.ReadLine();
+        }
+
+        private static string ConvertCameraChoice(string choice) 
+            
+         // Vì hàm này chỉ phục vụ trong class Program, không ai ở ngoài cần gọi nó
+         // Ở ngoài class này không hàm nào cần gọi nó hết
+
+        {
+            switch(choice)
+            {
+                case "1":
+                    return "basler";
+
+                case "2":
+                    return "hik";
+
+                case "3":
+                    return "cognex";
+
+                default:
+                    Console.WriteLine("Lựa chọn camera không hợp lệ. Mặc định dùng Basler");
+                    return "basler";
+            }
+        }
+
+        private static string ConvertInspectionChoice(string choice)
+        {
+            switch(choice)
+            {
+                case "1":
+                    return "missing";
+
+                case "2":
+                    return "position";
+
+                case "3":
+                    return "scratch";
+
+                default:
+                    Console.WriteLine("Lựa chọn kiểm tra không hợp lệ. Mặc định kiểm tra thiếu linh kiện");
+                    return "missing";
+            }    
         }
     }
 }
